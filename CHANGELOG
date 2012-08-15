@@ -1,5 +1,12 @@
 DataFabric changelog
 
+v1.3.3 - 2011-10-29
+
+- Added ConnectionProxy#respond_to? which delegates to underlying connection
+(Paul Gross and Dan Manges)
+- Remove specific handling of nested transactions and let the underlying
+connection handle it (Paul Gross and Dan Manges)
+
 v1.3.2 - 2011-06-02
 
 - Fix problem fetching spec for connection pool.

@@ -2,3 +2,4 @@
 /bin
 /bundle
 /test/*.db
+/vendor/bundle
