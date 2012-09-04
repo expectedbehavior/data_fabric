@@ -20,8 +20,9 @@ Gem::Specification.new do |s|
   s.description = s.summary = %q{Sharding and replication support for ActiveRecord}
   s.add_development_dependency(%q<minitest>, ["> 0"])
   s.add_development_dependency(%q<flexmock>, ["> 0"])
-  s.add_development_dependency(%q<sqlite3>, ["> 0"])
+  s.add_development_dependency(%q<sqlite3>, ["~> 1.3.5"])
   s.add_development_dependency(%q<mysql2>, ["> 0"])
   s.add_development_dependency(%q<rails>, ["~> 3.0"])
+  s.add_development_dependency(%q<debugger>, ["> 0"])
 end
 
