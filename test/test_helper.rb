@@ -16,6 +16,8 @@ if version
   gem 'activerecord', "=#{version}"
 end
 
+require 'rails'
+
 require 'active_record'
 require 'active_record/version'
 ActiveRecord::Base.logger = Logger.new(STDOUT)
