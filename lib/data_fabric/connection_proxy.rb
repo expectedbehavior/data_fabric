@@ -120,6 +120,9 @@ module DataFabric
       name = connection_name
       self.class.shard_pools[name] ||= begin
         config = ActiveRecord::Base.configurations[name]
+        if config['adapter'] =~ /sqlite/ && defined?(::Rails.root) && ':memory:' != config['database']
+          config['database'] = File.expand_path(config['database'], ::Rails.root)
+        end
         raise ArgumentError, "Unknown database config: #{name}" unless config
         n, existing_equivalent_connection = self.class.shard_pools.detect do |name, conn|
           config.stringify_keys == conn.spec.config.stringify_keys
