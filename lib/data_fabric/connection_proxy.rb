@@ -65,7 +65,7 @@ module DataFabric
     cattr_accessor :shard_pools
 
     def initialize(model_class, options)
-      @model_class = model_class      
+      @model_class = model_class
       @replicated  = options[:replicated]
       @shard_group = options[:shard_by]
       @prefix      = options[:prefix]
@@ -74,7 +74,7 @@ module DataFabric
       @model_class.send :include, ActiveRecordConnectionMethods if @replicated
     end
 
-    delegate :insert, :update, :delete, :create_table, :rename_table, :drop_table, :add_column, :remove_column, 
+    delegate :insert, :update, :delete, :create_table, :rename_table, :drop_table, :add_column, :remove_column,
       :change_column, :change_column_default, :rename_column, :add_index, :remove_index, :initialize_schema_information,
       :dump_schema_information, :execute, :execute_ignore_duplicate, :to => :master
 
@@ -120,19 +120,27 @@ module DataFabric
       name = connection_name
       self.class.shard_pools[name] ||= begin
         config = ActiveRecord::Base.configurations[name]
+        raise ArgumentError, "Unknown database config: #{name}" unless config
         if config['adapter'] =~ /sqlite/ && defined?(::Rails.root) && ':memory:' != config['database']
           config['database'] = File.expand_path(config['database'], ::Rails.root)
         end
-        raise ArgumentError, "Unknown database config: #{name}" unless config
+        config_spec = spec_for(config)
         n, existing_equivalent_connection = self.class.shard_pools.detect do |name, conn|
-          config.stringify_keys == conn.spec.config.stringify_keys
+          config_specs_eql?(config_spec, conn.spec)
         end
         existing_equivalent_connection ||
-          ActiveRecord::ConnectionAdapters::ConnectionPool.new(spec_for(config))
+          ActiveRecord::ConnectionAdapters::ConnectionPool.new(config_spec)
       end
     end
 
     private
+
+    def config_specs_eql?(spec1, spec2)
+      spec1.class == spec2.class &&
+        spec1.adapter_method == spec2.adapter_method &&
+        spec1.config.slice(:host, :database, :adapter, :socket) ==
+        spec2.config.slice(:host, :database, :adapter, :socket)
+    end
 
     def spec_for(config)
       config = config.symbolize_keys
